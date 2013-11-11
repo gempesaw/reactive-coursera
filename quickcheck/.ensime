@@ -1,0 +1,98 @@
+;; If your project contains a lot of files, it is advisable to enable (:disable-source-load-on-startup t)
+;; Otherwise Ensime might incur a massive lag at startup time
+;; See more information about that at http://aemoncannon.github.com/ensime/index.html
+
+(
+  :subprojects (
+    (
+      :name "progfun-quickcheck"
+      :module-name "progfun-quickcheck"
+      :depends-on-modules (
+      
+      )
+      :package "progfun-quickcheck"
+      :version "1.0.0"
+      :compile-deps (
+        "/Users/dgempesaw/.sbt/boot/scala-2.10.2/lib/scala-library.jar"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/lib_managed/jars/org.ensime/ensime-sbt-cmd/scala_2.10/sbt_0.12/ensime-sbt-cmd-0.1.1.jar"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/lib_managed/jars/org.scalacheck/scalacheck_2.10/scalacheck_2.10-1.10.1.jar"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/lib_managed/jars/org.scala-tools.testing/test-interface/test-interface-0.5.jar"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/lib_managed/jars/org.scala-lang/scala-actors/scala-actors-2.10.1.jar"
+      )
+      :runtime-deps (
+        "/Users/dgempesaw/.sbt/boot/scala-2.10.2/lib/scala-library.jar"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/lib_managed/jars/org.ensime/ensime-sbt-cmd/scala_2.10/sbt_0.12/ensime-sbt-cmd-0.1.1.jar"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/lib_managed/jars/org.scalacheck/scalacheck_2.10/scalacheck_2.10-1.10.1.jar"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/lib_managed/jars/org.scala-tools.testing/test-interface/test-interface-0.5.jar"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/lib_managed/jars/org.scala-lang/scala-actors/scala-actors-2.10.1.jar"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/target/scala-2.10/classes"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/target/scala-2.10/classes"
+      )
+      :test-deps (
+        "/Users/dgempesaw/.sbt/boot/scala-2.10.2/lib/scala-library.jar"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/lib_managed/jars/org.ensime/ensime-sbt-cmd/scala_2.10/sbt_0.12/ensime-sbt-cmd-0.1.1.jar"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/lib_managed/jars/org.scalacheck/scalacheck_2.10/scalacheck_2.10-1.10.1.jar"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/lib_managed/jars/org.scala-tools.testing/test-interface/test-interface-0.5.jar"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/lib_managed/jars/org.scala-lang/scala-actors/scala-actors-2.10.1.jar"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/lib_managed/jars/org.scalatest/scalatest_2.10/scalatest_2.10-1.9.1.jar"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/lib_managed/jars/org.scala-lang/scala-reflect/scala-reflect-2.10.0.jar"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/lib_managed/jars/junit/junit/junit-4.10.jar"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/lib_managed/jars/org.hamcrest/hamcrest-core/hamcrest-core-1.1.jar"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/target/scala-2.10/classes"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/target/scala-2.10/test-classes"
+      )
+      :source-roots (
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/src/main/scala"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/target/scala-2.10/src_managed/main"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/src/test/scala"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/target/scala-2.10/src_managed/test"
+      )
+      :target "/Users/dgempesaw/opt/reactive-coursera/quickcheck/target/scala-2.10/classes"
+      :test-target "/Users/dgempesaw/opt/reactive-coursera/quickcheck/target/scala-2.10/test-classes"
+    )
+    (
+      :name "progfun-quickcheck"
+      :module-name "progfun-quickcheck"
+      :depends-on-modules (
+      
+      )
+      :package "progfun-quickcheck"
+      :version "1.0.0"
+      :compile-deps (
+        "/Users/dgempesaw/.sbt/boot/scala-2.10.2/lib/scala-library.jar"
+        "/Users/dgempesaw/.ivy2/cache/scala_2.10/sbt_0.12/org.ensime/ensime-sbt-cmd/jars/ensime-sbt-cmd-0.1.1.jar"
+        "/Users/dgempesaw/.ivy2/cache/org.scalacheck/scalacheck_2.10/jars/scalacheck_2.10-1.10.1.jar"
+        "/Users/dgempesaw/.ivy2/cache/org.scala-tools.testing/test-interface/jars/test-interface-0.5.jar"
+        "/Users/dgempesaw/.ivy2/cache/org.scala-lang/scala-actors/jars/scala-actors-2.10.1.jar"
+      )
+      :runtime-deps (
+        "/Users/dgempesaw/.sbt/boot/scala-2.10.2/lib/scala-library.jar"
+        "/Users/dgempesaw/.ivy2/cache/scala_2.10/sbt_0.12/org.ensime/ensime-sbt-cmd/jars/ensime-sbt-cmd-0.1.1.jar"
+        "/Users/dgempesaw/.ivy2/cache/org.scalacheck/scalacheck_2.10/jars/scalacheck_2.10-1.10.1.jar"
+        "/Users/dgempesaw/.ivy2/cache/org.scala-tools.testing/test-interface/jars/test-interface-0.5.jar"
+        "/Users/dgempesaw/.ivy2/cache/org.scala-lang/scala-actors/jars/scala-actors-2.10.1.jar"
+      )
+      :test-deps (
+        "/Users/dgempesaw/.sbt/boot/scala-2.10.2/lib/scala-library.jar"
+        "/Users/dgempesaw/.ivy2/cache/scala_2.10/sbt_0.12/org.ensime/ensime-sbt-cmd/jars/ensime-sbt-cmd-0.1.1.jar"
+        "/Users/dgempesaw/.ivy2/cache/org.scalacheck/scalacheck_2.10/jars/scalacheck_2.10-1.10.1.jar"
+        "/Users/dgempesaw/.ivy2/cache/org.scala-tools.testing/test-interface/jars/test-interface-0.5.jar"
+        "/Users/dgempesaw/.ivy2/cache/org.scala-lang/scala-actors/jars/scala-actors-2.10.1.jar"
+        "/Users/dgempesaw/.ivy2/cache/org.scalatest/scalatest_2.10/jars/scalatest_2.10-1.9.1.jar"
+        "/Users/dgempesaw/.ivy2/cache/org.scala-lang/scala-reflect/jars/scala-reflect-2.10.0.jar"
+        "/Users/dgempesaw/.ivy2/cache/junit/junit/jars/junit-4.10.jar"
+        "/Users/dgempesaw/.ivy2/cache/org.hamcrest/hamcrest-core/jars/hamcrest-core-1.1.jar"
+      )
+      :source-roots (
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/submission/src/main/scala"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/submission/src/main/java"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/submission/target/scala-2.10/src_managed/main"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/src/test/scala"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/src/test/java"
+        "/Users/dgempesaw/opt/reactive-coursera/quickcheck/submission/target/scala-2.10/src_managed/test"
+      )
+      :target "/Users/dgempesaw/opt/reactive-coursera/quickcheck/submission/target/scala-2.10/classes"
+      :test-target "/Users/dgempesaw/opt/reactive-coursera/quickcheck/submission/target/scala-2.10/test-classes"
+    )
+  )
+)
