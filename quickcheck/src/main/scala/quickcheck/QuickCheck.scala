@@ -64,9 +64,22 @@ abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
     findMin(deleteMin(melded)) == 2
   }
 
-  property("argphghgh get me") = {
-    val h1 = insert( 1, insert( 2, insert( 3, insert( 4, empty))))
-    findMin(deleteMin(deleteMin(deleteMin(h1)))) == 4
+  property("oddly melded lists are equal") = forAll { (h1: H, h2: H) =>
+    def isHeapEqual(h1: H, h2: H): Boolean = {
+      def isEqualIter( status: Boolean, h1: H, h2: H): Boolean = {
+        if (isEmpty(h1))
+          if (isEmpty(h2))
+            true
+          else
+            false
+        else
+          status && isEqualIter(findMin(h1) == findMin(h2), deleteMin(h1), deleteMin(h2))
+      }
+
+      isEqualIter( true, h1, h2)
+    }
+
+    isHeapEqual(meld(deleteMin(h1), insert(findMin(h1), h2)), meld(h1, h2))
   }
 
   lazy val genMap: Gen[Map[Int,Int]] = for {
@@ -77,7 +90,7 @@ abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
 
   lazy val genHeap: Gen[H] = for {
     k <- arbitrary[A]
-    m <- oneOf(empty, genHeap, genHeap, genHeap, genHeap, genHeap, genHeap)
+    m <- oneOf(empty, genHeap)
   } yield insert(k, m)
 
   implicit lazy val arbHeap: Arbitrary[H] = Arbitrary(genHeap)
