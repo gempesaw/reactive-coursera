@@ -8,9 +8,10 @@ import java.awt.event.{ActionListener, ActionEvent}
 
 object EpidemyDisplay extends EpidemySimulator with App {
 
-  class Situation(var healthy: Int, var sick: Int, var immune: Int) {
-    def reset { healthy = 0; sick = 0; immune = 0 }
+  class Situation(var healthy: Int, var sick: Int, var immune: Int, var dead: Int) {
+    def reset { healthy = 0; sick = 0; immune = 0; dead = 0}
     def count(p: Person) {
+      if (p.dead) dead += 1
       if (p.immune) immune += 1
       else if (p.sick) sick += 1
       else healthy += 1
@@ -20,7 +21,7 @@ object EpidemyDisplay extends EpidemySimulator with App {
 
   val world: Grid[Situation] = new Grid[Situation](SimConfig.roomRows, SimConfig.roomColumns)
   for (row <- 0 to world.height - 1; col <- 0 to world.width - 1)
-    world.update(row, col, new Situation(0, 0, 0))
+    world.update(row, col, new Situation(0, 0, 0, 0))
   var history: List[Situation] = Nil
   var historyContinues = true
 
@@ -34,10 +35,11 @@ object EpidemyDisplay extends EpidemySimulator with App {
     for (p <- persons) {
       historyContinues = historyContinues || p.infected
     }
-    val ns = new Situation(0, 0, 0)
+    val ns = new Situation(0, 0, 0, 0)
     for (s <- world) {
       ns.healthy += s.healthy
       ns.sick += s.sick
+      ns.dead += s.dead
       ns.immune += s.immune
     }
     history = ns :: history
@@ -65,6 +67,7 @@ object EpidemyDisplay extends EpidemySimulator with App {
     val roomDimension = new Dimension(roomSize + 1, roomSize + 1)
     setPreferredSize(roomDimension)
     var situation: Situation = null
+    def dead = situation.dead min totalCount
     def sick = situation.sick min totalCount
     def healthy = (sick + situation.healthy) min totalCount
     def immune = (healthy + situation.immune) min totalCount
@@ -172,10 +175,11 @@ object EpidemyDisplay extends EpidemySimulator with App {
         }
         if (!history.isEmpty) setText("On day " + countTime + ", " +
                                       history.head.healthy + " healthy, " +
-                                      history.head.sick + " sick/dead, " +
+                                      history.head.sick + " sick, " +
+                                      history.head.dead + " dead, " +
                                       history.head.immune + " immune.")
         populationGraph.repaint()
-      	countTime += 1
+        countTime += 1
         if (countTime == 150) println("Dead people on day 150: "+persons.count(p => p.dead))
       }
     }
