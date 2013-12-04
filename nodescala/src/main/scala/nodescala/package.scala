@@ -58,15 +58,7 @@ package object nodescala {
     /** Returns a future with a unit value that is completed after time `t`.
      */
     def delay(t: Duration): Future[Unit] = {
-      try {
-        Await.result(Future.never, t)
-      } catch {
-        case _ : Throwable => {
-          val p = Promise[Unit]()
-          p.success(())
-          p.future
-        }
-      }
+      Future { Try ( Await.result(Future.never, t) ) }
     }
 
     /** Completes this future with user input.
