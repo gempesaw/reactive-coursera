@@ -17,142 +17,239 @@ import org.scalatest.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class NodeScalaSuite extends FunSuite {
 
-  test("A Future should always be created") {
-    val always = Future.always(517)
+  // test("A Future should always be created") {
+  //   val always = Future.always(517)
 
-    assert(Await.result(always, 0 nanos) == 517)
-  }
+  //   assert(Await.result(always, 0 nanos) == 517)
+  // }
 
-  test("A Future should never be created") {
-    val never = Future.never[Int]
+  // test("A Future should never be created") {
+  //   val never = Future.never[Int]
 
-    try {
-      Await.result(never, 1 second)
-      assert(false)
-    } catch {
-      case t: TimeoutException => // ok!
+  //   try {
+  //     Await.result(never, 1 second)
+  //     assert(false)
+  //   } catch {
+  //     case t: TimeoutException => // ok!
+  //   }
+  // }
+
+  // test("Future.all passes") {
+  //   val fs = List(Future.always(1), Future.always(2))
+  //   val all = Future.all(fs)
+  //   val res = Await.result(all, 1 second)
+  //   assert(res === List(1, 2))
+  // }
+
+  // test("Future.all fails") {
+  //   val fs = List(Future.always(1), Future.failed(new Exception))
+  //   val all = Future.all(fs)
+  //   intercept[Exception](Await.result(all, 1 second))
+  // }
+
+  // test("Future.any when all pass") {
+  //   val fs = List(Future { Thread.sleep(15); 8 }, Future { Thread.sleep(10); 5 } )
+  //   val any = Future.any(fs)
+  //   val res = Await.result(any, 1 second)
+  //   assert(res === 5)
+  // }
+
+  // test("Future.any when first passes") {
+  //   val fs = List(Future.never, Future { Thread.sleep(10); 5 } )
+  //   val any = Future.any(fs)
+  //   val res = Await.result(any, 1 second)
+  //   assert(res === 5)
+  // }
+
+  // test("Future.any when first fails") {
+  //   val fs = List(Future.failed(new Exception), Future { Thread.sleep(10); 5 } )
+  //   val any = Future.any(fs)
+  //   intercept[Exception](Await.result(any, 1 second))
+  // }
+
+  // test("A Future should be completed after 3s when using a delay of 1s") {
+  //   Await.ready(Future.delay(1 second), 3 seconds)
+  //   assert(true)
+  // }
+
+  test("A Future should not complete after 1s when using a delay of 3s") {
+    intercept[TimeoutException] {
+      val future = Future.delay(3 seconds)
+      Await.result(future, 1 second)
     }
   }
 
-  test("CancellationTokenSource should allow stopping the computation") {
-    val cts = CancellationTokenSource()
-    val ct = cts.cancellationToken
-    val p = Promise[String]()
+  // test("Future.now completed") {
+  //   val always = Future.always(5)
+  //   assert(always.now === 5)
+  // }
 
-    async {
-      while (ct.nonCancelled) {
-        // do work
-      }
+  // test("Future.now should throw an exception if it's not completed") {
+  //   val never = Future.never
+  //   intercept[NoSuchElementException](never.now)
+  // }
 
-      p.success("done")
-    }
+  // test("Future.continueWith should contain the continued value") {
+  //   val future = Future.always(1).continueWith { _ => "goodbye" }
+  //   val res = Await.result(future, 1 second)
+  //   assert(res === "goodbye")
+  // }
 
-    cts.unsubscribe()
-    assert(Await.result(p.future, 1 second) == "done")
-  }
+  // test("Future.continueWith should handle exceptions thrown by the user specified continuation function") {
+  //   val future = Future.always("hello").continueWith { _ => throw new Exception }
+  //   intercept[Exception](Await.result(future, 1 second))
+  // }
 
-  class DummyExchange(val request: Request) extends Exchange {
-    @volatile var response = ""
-    val loaded = Promise[String]()
-    def write(s: String) {
-      response += s
-    }
-    def close() {
-      loaded.success(response)
-    }
-  }
+  // test("continueWith should handle exceptions thrown by f, the original future") {
+  //   val future = Future { throw new Exception } continueWith { _ => "goodbye" }
+  //   intercept[Exception](Await.result(future, 1 second))
+  // }
 
-  class DummyListener(val port: Int, val relativePath: String) extends NodeScala.Listener {
-    self =>
+  // test(" Future.continue should contain the continued value") {
+  //   val future = Future.always(1).continue { _ => "goodbye" }
+  //   val res = Await.result(future, 1 second)
+  //   assert(res === "goodbye")
+  // }
 
-    @volatile private var started = false
-    var handler: Exchange => Unit = null
+  // test("Future.continue should handle exceptions thrown by the user specified continuation function") {
+  //   val future = Future.always("hello").continue { _ => throw new Exception }
+  //   intercept[Exception](Await.result(future, 1 second))
+  // }
 
-    def createContext(h: Exchange => Unit) = this.synchronized {
-      assert(started, "is server started?")
-      handler = h
-    }
+  // test("CancellationTokenSource should allow stopping the computation") {
+  //   val cts = CancellationTokenSource()
+  //   val ct = cts.cancellationToken
+  //   val p = Promise[String]()
 
-    def removeContext() = this.synchronized {
-      assert(started, "is server started?")
-      handler = null
-    }
+  //   async {
+  //     while (ct.nonCancelled) {
+  //       // do work
+  //     }
 
-    def start() = self.synchronized {
-      started = true
-      new Subscription {
-        def unsubscribe() = self.synchronized {
-          started = false
-        }
-      }
-    }
+  //     p.success("done")
+  //   }
 
-    def emit(req: Request) = {
-      val exchange = new DummyExchange(req)
-      if (handler != null) handler(exchange)
-      exchange
-    }
-  }
+  //   cts.unsubscribe()
+  //   assert(Await.result(p.future, 1 second) == "done")
+  // }
 
-  class DummyServer(val port: Int) extends NodeScala {
-    self =>
-    val listeners = mutable.Map[String, DummyListener]()
+  // test("Future.run unsubscribes when it's done") {
+  //   var finished = false
+  //   val working = Future.run() { ct =>
+  //     Future {
+  //       while (ct.nonCancelled) {
+  //         // println("working")
+  //       }
+  //       // println("done")
+  //       finished = true
+  //     }
+  //   }
+  //   Future.delay(100 microseconds) onSuccess {
+  //     case _ => working.unsubscribe()
+  //   }
 
-    def createListener(relativePath: String) = {
-      val l = new DummyListener(port, relativePath)
-      listeners(relativePath) = l
-      l
-    }
+  //   Await.ready(Future.delay(500 microseconds), Duration.Inf)
+  //   assert(finished)
+  // }
 
-    def emit(relativePath: String, req: Request) = this.synchronized {
-      val l = listeners(relativePath)
-      l.emit(req)
-    }
-  }
+  // class DummyExchange(val request: Request) extends Exchange {
+  //   @volatile var response = ""
+  //   val loaded = Promise[String]()
+  //   def write(s: String) {
+  //     response += s
+  //   }
+  //   def close() {
+  //     loaded.success(response)
+  //   }
+  // }
 
-  test("Listener should serve the next request as a future") {
-    val dummy = new DummyListener(8191, "/test")
-    val subscription = dummy.start()
+  // class DummyListener(val port: Int, val relativePath: String) extends NodeScala.Listener {
+  //   self =>
 
-    def test(req: Request) {
-      val f = dummy.nextRequest()
-      dummy.emit(req)
-      val (reqReturned, xchg) = Await.result(f, 1 second)
+  //   @volatile private var started = false
+  //   var handler: Exchange => Unit = null
 
-      assert(reqReturned == req)
-    }
+  //   def createContext(h: Exchange => Unit) = this.synchronized {
+  //     assert(started, "is server started?")
+  //     handler = h
+  //   }
 
-    test(immutable.Map("StrangeHeader" -> List("StrangeValue1")))
-    test(immutable.Map("StrangeHeader" -> List("StrangeValue2")))
+  //   def removeContext() = this.synchronized {
+  //     assert(started, "is server started?")
+  //     handler = null
+  //   }
 
-    subscription.unsubscribe()
-  }
+  //   def start() = self.synchronized {
+  //     started = true
+  //     new Subscription {
+  //       def unsubscribe() = self.synchronized {
+  //         started = false
+  //       }
+  //     }
+  //   }
 
-  test("Server should serve requests") {
-    val dummy = new DummyServer(8191)
-    val dummySubscription = dummy.start("/testDir") {
-      request => for (kv <- request.iterator) yield (kv + "\n").toString
-    }
+  //   def emit(req: Request) = {
+  //     val exchange = new DummyExchange(req)
+  //     if (handler != null) handler(exchange)
+  //     exchange
+  //   }
+  // }
 
-    // wait until server is really installed
-    Thread.sleep(500)
+  // class DummyServer(val port: Int) extends NodeScala {
+  //   self =>
+  //   val listeners = mutable.Map[String, DummyListener]()
 
-    def test(req: Request) {
-      val webpage = dummy.emit("/testDir", req)
-      val content = Await.result(webpage.loaded.future, 1 second)
-      val expected = (for (kv <- req.iterator) yield (kv + "\n").toString).mkString
-      assert(content == expected, s"'$content' vs. '$expected'")
-    }
+  //   def createListener(relativePath: String) = {
+  //     val l = new DummyListener(port, relativePath)
+  //     listeners(relativePath) = l
+  //     l
+  //   }
 
-    test(immutable.Map("StrangeRequest" -> List("Does it work?")))
-    test(immutable.Map("StrangeRequest" -> List("It works!")))
-    test(immutable.Map("WorksForThree" -> List("Always works. Trust me.")))
+  //   def emit(relativePath: String, req: Request) = this.synchronized {
+  //     val l = listeners(relativePath)
+  //     l.emit(req)
+  //   }
+  // }
 
-    dummySubscription.unsubscribe()
-  }
+  // test("Listener should serve the next request as a future") {
+  //   val dummy = new DummyListener(8191, "/test")
+  //   val subscription = dummy.start()
+
+  //   def test(req: Request) {
+  //     val f = dummy.nextRequest()
+  //     dummy.emit(req)
+  //     val (reqReturned, xchg) = Await.result(f, 1 second)
+
+  //     assert(reqReturned == req)
+  //   }
+
+  //   test(immutable.Map("StrangeHeader" -> List("StrangeValue1")))
+  //   test(immutable.Map("StrangeHeader" -> List("StrangeValue2")))
+
+  //   subscription.unsubscribe()
+  // }
+
+  // test("Server should serve requests") {
+  //   val dummy = new DummyServer(8191)
+  //   val dummySubscription = dummy.start("/testDir") {
+  //     request => for (kv <- request.iterator) yield (kv + "\n").toString
+  //   }
+
+  //   // wait until server is really installed
+  //   Thread.sleep(500)
+
+  //   def test(req: Request) {
+  //     val webpage = dummy.emit("/testDir", req)
+  //     val content = Await.result(webpage.loaded.future, 1 second)
+  //     val expected = (for (kv <- req.iterator) yield (kv + "\n").toString).mkString
+  //     assert(content == expected, s"'$content' vs. '$expected'")
+  //   }
+
+  //   test(immutable.Map("StrangeRequest" -> List("Does it work?")))
+  //   test(immutable.Map("StrangeRequest" -> List("It works!")))
+  //   test(immutable.Map("WorksForThree" -> List("Always works. Trust me.")))
+
+  //   dummySubscription.unsubscribe()
+  // }
 
 }
-
-
-
-
