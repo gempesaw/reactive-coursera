@@ -10,6 +10,9 @@ import scala.util.{Try, Success, Failure}
 import rx.lang.scala._
 import org.scalatest._
 import gui._
+import rx.lang.scala.Notification.OnCompleted
+import rx.lang.scala.Notification.OnError
+import rx.lang.scala.Notification.OnNext
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -67,4 +70,11 @@ class WikipediaApiTest extends FunSuite {
     }
     assert(total == (1 + 1 + 2 + 1 + 2 + 3), s"Sum: $total")
   }
+
+  // val h = Observable(wikipediaSuggestion("test")).toBlockingObservable.single
+  // println(h.value)
+  val searchTerms = Observable("test") ++ Observable(new Exception())
+  val suggestions: Observable[Try[List[String]]] = searchTerms concatRecovered { s: String => wikiSuggestResponseStream(s) }
+  println(suggestions.toBlockingObservable.single)
+
 }
