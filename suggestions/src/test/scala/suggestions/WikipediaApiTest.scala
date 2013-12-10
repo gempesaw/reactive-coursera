@@ -3,6 +3,7 @@ package suggestions
 
 
 import language.postfixOps
+import scala.language.implicitConversions
 import scala.concurrent._
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -13,7 +14,10 @@ import gui._
 import rx.lang.scala.Notification.OnCompleted
 import rx.lang.scala.Notification.OnError
 import rx.lang.scala.Notification.OnNext
-
+import rx.lang.scala.Subscription
+import rx.lang.scala.{Observable, Subscription}
+import rx.lang.scala.subscriptions.Subscription
+import rx.subscriptions.CompositeSubscription
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
@@ -71,10 +75,31 @@ class WikipediaApiTest extends FunSuite {
     assert(total == (1 + 1 + 2 + 1 + 2 + 3), s"Sum: $total")
   }
 
+  test("ConcatRecoverd streams should contain mapped values from the original stream") {
+    val o1 = Observable(1, 2, 3, 4, 5)
+
+    // Creates an observable with errors
+    def error[T](error: Throwable): Observable[T] = {
+      Observable(observer => {
+        observer.onError(error)
+        Subscription {}
+      })
+    }
+
+    implicit def intToTry(v: Int) = Success(v)
+
+    val ex = new Exception
+    val x = o1.concatRecovered(num => if (num != 4) Observable(num) else error(ex))
+    assert(x.toBlockingObservable.toList === List(Success(1), Success(2), Success(3), Failure(ex), Success(5)))
+
+    val o2 = Observable(1, 2, 3).concatRecovered(num => Observable(num, num, num))
+    assert(o2.toBlockingObservable.toList === List[Try[Int]](1, 1, 1, 2, 2, 2, 3, 3, 3))
+  }
+
   // val h = Observable(wikipediaSuggestion("test")).toBlockingObservable.single
   // println(h.value)
-  val searchTerms = Observable("test") ++ Observable(new Exception())
-  val suggestions: Observable[Try[List[String]]] = searchTerms concatRecovered { s: String => wikiSuggestResponseStream(s) }
-  println(suggestions.toBlockingObservable.single)
+  // val searchTerms = Observable("test") ++ Observable(new Exception())
+  // val suggestions: Observable[Try[List[String]]] = searchTerms concatRecovered { s: String => wikiSuggestResponseStream(s) }
+  // println(suggestions.toBlockingObservable.single)
 
 }
