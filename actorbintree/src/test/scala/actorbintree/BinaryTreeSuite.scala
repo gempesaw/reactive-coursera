@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2009-2013 Typesafe Inc. <http://www.typesafe.com>
- */
+  * Copyright (C) 2009-2013 Typesafe Inc. <http://www.typesafe.com>
+  */
 package actorbintree
 
 import akka.actor.{ Props, ActorRef, ActorSystem }
@@ -12,7 +12,7 @@ import scala.concurrent.duration._
 import org.scalatest.FunSuite
 
 
-class BinaryTreeSuite(_system: ActorSystem) extends TestKit(_system) with FunSuite with ShouldMatchers with BeforeAndAfterAll with ImplicitSender 
+class BinaryTreeSuite(_system: ActorSystem) extends TestKit(_system) with FunSuite with ShouldMatchers with BeforeAndAfterAll with ImplicitSender
 {
 
   def this() = this(ActorSystem("PostponeSpec"))
@@ -46,9 +46,43 @@ class BinaryTreeSuite(_system: ActorSystem) extends TestKit(_system) with FunSui
     receiveN(probe, ops, expected)
   }
 
+  test("Test empty tree 'Contains'") {
+    val testNode = system.actorOf(BinaryTreeNode.props(0, true))
+
+    testNode ! Contains(testActor, id = 1, 0)
+    expectMsg(ContainsResult(1, false))
+  }
+
+  test("Test empty tree 'Insert'") {
+    val testNode = system.actorOf(BinaryTreeNode.props(0, true))
+
+    testNode ! Insert(testActor, id = 1, 42)
+    expectMsg(OperationFinished(1))
+    testNode ! Contains(testActor, id = 2, 42)
+    expectMsg(ContainsResult(2, true))
+  }
+
+  test("insert and contains") {
+    val testNode = system.actorOf(BinaryTreeNode.props(0, true))
+
+    testNode ! Insert(testActor, id = 2, 0)
+    expectMsg(OperationFinished(2))
+    testNode ! Contains(testActor, id = 3, 0)
+    expectMsg(ContainsResult(3, true))
+
+    testNode ! Insert(testActor, id = 4, -1)
+    expectMsg(OperationFinished(4))
+    testNode ! Contains(testActor, id = 5, -1)
+    expectMsg(ContainsResult(5, true))
+
+    testNode ! Insert(testActor, id = 6, 1)
+    expectMsg(OperationFinished(6))
+    testNode ! Contains(testActor, id = 7, 1)
+    expectMsg(ContainsResult(7, true))
+  }
+
   test("proper inserts and lookups") {
     val topNode = system.actorOf(Props[BinaryTreeSet])
-
     topNode ! Contains(testActor, id = 1, 1)
     expectMsg(ContainsResult(1, false))
 
@@ -69,20 +103,52 @@ class BinaryTreeSuite(_system: ActorSystem) extends TestKit(_system) with FunSui
       Insert(requesterRef, id=20, 2),
       Contains(requesterRef, id=80, 1),
       Contains(requesterRef, id=70, 2)
-      )
-   
+    )
+
+
     val expectedReplies = List(
       OperationFinished(id=10),
       OperationFinished(id=20),
       ContainsResult(id=50, false),
       ContainsResult(id=70, true),
       ContainsResult(id=80, false),
-      OperationFinished(id=100)     
-      )
+      OperationFinished(id=100)
+    )
 
     verify(requester, ops, expectedReplies)
   }
-  
+
+  test("removes alone") {
+    val testNode = system.actorOf(Props[BinaryTreeSet])
+
+    testNode ! Remove(testActor, id=1, 42)
+    expectMsg(OperationFinished(1))
+    testNode ! Insert(testActor, id = 2, 42)
+    expectMsg(OperationFinished(2))
+    testNode ! Contains(testActor, id = 3, 42)
+    expectMsg(ContainsResult(3, true))
+    testNode ! Remove(testActor, id=4, 42)
+    expectMsg(OperationFinished(4))
+  }
+
+  test("gc") {
+    val testNode = system.actorOf(Props[BinaryTreeSet])
+    testNode ! Insert(testActor, id = 2, 0)
+    expectMsg(OperationFinished(2))
+    testNode ! IsLeaf(testActor, id = 3, 0)
+    expectMsg(IsLeafResult(3, true))
+    testNode ! Insert(testActor, id = 4, 42)
+    expectMsg(OperationFinished(4))
+    testNode ! Remove(testActor, id=5, 42)
+    expectMsg(OperationFinished(5))
+    testNode ! IsLeaf(testActor, id = 6, 0)
+    expectMsg(IsLeafResult(6, false))
+
+    testNode ! GC
+    testNode ! IsLeaf(testActor, id = 7, 0)
+    expectMsg(IsLeafResult(7, true))
+  }
+
   test("behave identically to built-in set (includes GC)") {
     val rnd = new Random()
     def randomOperations(requester: ActorRef, count: Int): Seq[Operation] = {
