@@ -56,5 +56,4 @@ class Step3_ReplicatorSpec extends TestKit(ActorSystem("Step3ReplicatorSpec"))
 
     secondary.reply(SnapshotAck("k1", 0L))
   }
-
 }

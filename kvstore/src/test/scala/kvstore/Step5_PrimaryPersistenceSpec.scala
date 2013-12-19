@@ -92,7 +92,7 @@ class Step5_PrimaryPersistenceSpec extends TestKit(ActorSystem("Step5PrimaryPers
 
     val setId = client.set("foo", "bar")
     secondary.expectMsgType[Snapshot]
-    client.nothingHappens(800.milliseconds) // SHould not fail too early
+    client.nothingHappens(800.milliseconds) // Should not fail too early
     client.waitFailed(setId)
   }
 
@@ -116,5 +116,4 @@ class Step5_PrimaryPersistenceSpec extends TestKit(ActorSystem("Step5PrimaryPers
     secondaryB.reply(SnapshotAck("foo", seqB))
     client.waitAck(setId)
   }
-
 }

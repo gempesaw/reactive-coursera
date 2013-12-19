@@ -35,6 +35,7 @@ class Step6_NewSecondarySpec extends TestKit(ActorSystem("Step6NewSecondarySpec"
 
     secondary.expectMsg(Snapshot("k1", Some("v1"), 0L))
     secondary.reply(SnapshotAck("k1", 0L))
+    user.waitAck(0)
 
     val ack1 = user.set("k1", "v2")
     secondary.expectMsg(Snapshot("k1", Some("v2"), 1L))

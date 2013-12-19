@@ -98,6 +98,10 @@ class Step2_SecondarySpec extends TestKit(ActorSystem("Step2SecondarySpec"))
 
     client.get("k1") should be === None
 
+    replicator.send(secondary, Snapshot("k1", Some("v1"), 5L))
+    replicator.expectNoMsg(300.milliseconds)
+    client.get("k1") should be === None
+
     replicator.send(secondary, Snapshot("k1", Some("v1"), 1L))
     replicator.expectNoMsg(300.milliseconds)
     client.get("k1") should be === None
@@ -106,5 +110,4 @@ class Step2_SecondarySpec extends TestKit(ActorSystem("Step2SecondarySpec"))
     replicator.expectMsg(SnapshotAck("k1", 0L))
     client.get("k1") should be === Some("v2")
   }
-
 }
